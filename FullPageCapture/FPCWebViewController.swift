@@ -9,31 +9,49 @@
 import UIKit
 import WebKit
 
-class FPCWebViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelegate {
+class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var pageTitleLabel: UILabel!
+    @IBOutlet weak var pageTitleView: ProgressView!
+    @IBOutlet weak var menuBarHeight: NSLayoutConstraint!
+    @IBOutlet weak var menuBar: UIView!
+    
     var webView = WKWebView()
-
+    var captures = [UIImage]()
+    var previousY : CGFloat = 0.0
+    var canHideMenuBar = false
+    
+    
+    @IBOutlet weak var goBackButton: UIButton!
+    @IBOutlet weak var goForwardButton: UIButton!
+    @IBOutlet weak var reloadButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        searchBar.delegate = self
+        
+        webView.frame = CGRectMake(0, pageTitleView.frame.size.height + 20, view.frame.width, UIScreen.mainScreen().bounds.size.height - menuBar.frame.size.height)
+        webView.scrollView.contentInset = UIEdgeInsetsMake(menuBar.frame.size.height, 0, 0, 0)
+        view.addSubview(webView)
+        view.sendSubviewToBack(webView)
+        
+        webView.navigationDelegate = self
+        webView.UIDelegate = self
+        webView.scrollView.delegate = self
+        webView.allowsBackForwardNavigationGestures = true
+        webView.addObserver(self, forKeyPath:"estimatedProgress", options:.New, context:nil)
+        webView.addObserver(self, forKeyPath:"canGoBack", options:.New, context:nil)
+        webView.addObserver(self, forKeyPath:"canGoForward", options:.New, context:nil)
+        
+        goBackButton.userInteractionEnabled = false
+        goForwardButton.userInteractionEnabled = false
+        reloadButton.userInteractionEnabled = false
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
-        
-        webView.frame = CGRectMake(0, searchBar.frame.size.height + 20, view.frame.width, UIScreen.mainScreen().bounds.size.height - searchBar.frame.size.height - 49 - 20)
-        view.addSubview(webView)
-        
-        webView.navigationDelegate = self
-        webView.scrollView.delegate = self
-        
-        if let url = NSURL(string: "http://google.com/") {
-            let request = NSURLRequest(URL: url)
-            webView.loadRequest(request)
-        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -41,69 +59,280 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, UIScrollView
         // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - WKNavigationDelegate
-    func webView(webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print(__FUNCTION__)
-    }
-    
-    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
-        print(__FUNCTION__)
-    }
-    func webView(webView: WKWebView, didFailNavigation navigation: WKNavigation!, withError error: NSError) {
-        print(__FUNCTION__)
-    }
-    
-    
-    // MARK: - UIScrollViewDelegate
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        print(__FUNCTION__)
-    }
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        print(__FUNCTION__)
+    deinit {
+        webView.removeObserver(self, forKeyPath: "estimatedProgress")
+        webView.removeObserver(self, forKeyPath: "canGoBack")
+        webView.removeObserver(self, forKeyPath: "canGoForward")
     }
 
     @IBAction func tapAButton(sender: AnyObject) {
-        print(__FUNCTION__)
-        let webViewContentSize = webView.scrollView.contentSize
-        print(webViewContentSize)
-        let currentOffset = webView.scrollView.contentOffset
+        webView.userInteractionEnabled = false
+        moveToScrollViewTop()
         
-        
-        let capture = screenCapture(view: webView, rect: webView.frame)
-        let imageView = UIImageView(frame: CGRectMake(0, 0, 100, 100))
-        imageView.image = capture
-        view.addSubview(imageView)
-        
-        UIImageWriteToSavedPhotosAlbum(capture, self, "image:didFinishSavingWithError:contextInfo:", nil)
-        
-        webView.scrollView.contentOffset = CGPointMake(currentOffset.x, currentOffset.y + webView.frame.size.height)
+        let timer = NSTimer(timeInterval: 1.0, target: self, selector: #selector(takeScreenshot(_:)), userInfo: nil, repeats: true)
+        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
     }
     
-    
-    
-    
-    func screenCapture(view view:UIView, rect:CGRect) -> UIImage {
-        var capture : UIImage
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.mainScreen().scale)
-        let context = UIGraphicsGetCurrentContext()
-        CGContextTranslateCTM(context, -rect.origin.x, -rect.origin.y)
-        
-        if view.respondsToSelector("drawViewHierarchyInRect:afterScreenUpdates:") {
-            view.drawViewHierarchyInRect(view.frame, afterScreenUpdates: true)
-        } else {
-            view.layer.renderInContext(UIGraphicsGetCurrentContext()!)
-        }
-        
-        capture = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return capture
+    @IBAction func tapGoBackButton(sender: AnyObject) {
+        webView.goBack()
     }
     
+    @IBAction func tapGoForwardButton(sender: AnyObject) {
+        webView.goForward()
+    }
+    
+    @IBAction func tapReloadButton(sender: AnyObject) {
+        webView.reload()
+    }
+    
+    // MARK - Private Methods
     func image(image: UIImage, didFinishSavingWithError error: NSError!, contextInfo: UnsafeMutablePointer<Void>) {
-        print(__FUNCTION__)
         if error != nil {
             print(error.code)
         }
+    }
+    
+    func takeScreenshot(id:AnyObject) {
+        let webViewContentSize = webView.scrollView.contentSize
+        let currentOffset = webView.scrollView.contentOffset
+        let capture = webView.screenshot()
+        
+        captures.append(capture)
+        
+        webView.scrollView.contentOffset = CGPointMake(currentOffset.x, currentOffset.y + webView.frame.size.height)
+        
+        if (webViewContentSize.height < currentOffset.y) {
+            
+            var targetPoint = CGPointZero
+            UIGraphicsBeginImageContext(CGSizeMake(webViewContentSize.width * UIScreen.mainScreen().scale, webViewContentSize.height * UIScreen.mainScreen().scale));
+            
+            for image in captures {
+                
+                let imageWidth = CGFloat(CGImageGetWidth(image.CGImage))
+                let imageHeight = CGFloat(CGImageGetHeight(image.CGImage))
+                let imageRect = CGRectMake(targetPoint.x, targetPoint.y, imageWidth, imageHeight)
+                
+                image.drawInRect(imageRect)
+                
+                targetPoint = CGPointMake(imageRect.origin.x, imageRect.origin.y + imageRect.size.height)
+            }
+            let compositeImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            
+            // save whole screenshot to Photo app
+            UIImageWriteToSavedPhotosAlbum(compositeImage, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+            
+            // reset stored captures
+            captures = [UIImage]()
+            webView.userInteractionEnabled = true
+            moveToScrollViewTop()
+            
+            if id is NSTimer {
+                id.invalidate()
+            }
+        }
+    }
+    
+    func moveToScrollViewTop() {
+        webView.scrollView.contentOffset = CGPointZero
+    }
+    
+    // MARK - KVO
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        guard let keyPath = keyPath, change = change else {
+            return
+        }
+        
+        switch keyPath {
+        case "estimatedProgress":
+            if let progress = change[NSKeyValueChangeNewKey] as? Double {
+                pageTitleView.progress = progress
+                pageTitleView.setNeedsDisplay()
+            }
+            break
+            case "canGoBack":
+                goBackButton.userInteractionEnabled = true
+            break
+            case "canGoForward":
+                goForwardButton.userInteractionEnabled = true
+            break
+        default:
+            break
+        }
+    }
+}
+
+extension FPCWebViewController {
+
+    // MARK - UIScrollViewDelegate
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if !canHideMenuBar {
+            return
+        }
+        
+        if scrollView.contentOffset.y < previousY || scrollView.contentOffset.y < 0 {
+            print("出す")
+            menuBarHeight.constant = 44.0
+            menuBar.alpha = 1.0
+        } else {
+            print("隠す")
+            let diff = scrollView.contentOffset.y - previousY
+            let afterViewHeight = menuBarHeight.constant - diff
+            print(afterViewHeight)
+            if afterViewHeight < 0 {
+                menuBarHeight.constant = 0
+                menuBar.alpha = 0.0
+            } else {
+                menuBarHeight.constant = afterViewHeight
+                menuBar.alpha -= 0.05
+            }
+        }
+        
+        previousY = scrollView.contentOffset.y
+    }
+    
+    // MARK - UISearchBarDelegate
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        
+        guard let query = searchBar.text else {
+            print("urlがおかしい")
+            return
+        }
+        
+        var urlString = ""
+        
+        if query.lowercaseString.hasPrefix("http") {
+            urlString = query
+        } else {
+            let encordedQuery = query.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+            if let encordedQuery = encordedQuery {
+                urlString = "http://google.com/#q=\(encordedQuery)"
+            }
+        }
+
+        if let url = NSURL(string: urlString) {
+            let request = NSURLRequest(URL: url)
+            webView.loadRequest(request)
+        }
+    }
+    
+    // MARK - WKNavigationDelegate
+    func webView(webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        canHideMenuBar = false
+        reloadButton.userInteractionEnabled = false
+    }
+    
+    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
+        pageTitleLabel.text = webView.title
+        canHideMenuBar = true
+        reloadButton.userInteractionEnabled = true
+    }
+    
+    // MARK - WKUIDelegate
+    func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
+        // enable to open target="_blank"
+        if navigationAction.targetFrame == nil {
+            webView.loadRequest(navigationAction.request)
+        }
+        return nil
+    }
+    
+    func webView(webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: () -> Void) {
+        
+        // display javascript default alert function by UIAlertViewController
+        let alertController = javaScriptAlertViewController(webView.URL, message: message, preferredStyle: .Alert)
+        
+        let doneAction = UIAlertAction(title: "OK", style: .Default) { action in completionHandler() }
+        alertController.addAction(doneAction)
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    func webView(webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: (Bool) -> Void) {
+        
+        // display javascript confirm alert function by UIAlertViewController
+        let alertController = javaScriptAlertViewController(webView.URL, message: message, preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "キャンセル", style: .Cancel) { action in completionHandler(false) }
+        let doneAction = UIAlertAction(title: "OK", style: .Default) { action in completionHandler(true) }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(doneAction)
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    func webView(webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: (String?) -> Void) {
+        
+        // display javascript prompt alert function by UIAlertViewController
+        let alertController = javaScriptAlertViewController(webView.URL, message: prompt, preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "キャンセル", style: .Cancel) { action in completionHandler("") }
+        let doneAction = UIAlertAction(title: "OK", style: .Default) { action in completionHandler(alertController.textFields?.first?.text)}
+        
+        alertController.addTextFieldWithConfigurationHandler() { $0.text = defaultText }
+        alertController.addAction(cancelAction)
+        alertController.addAction(doneAction)
+        
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    func webView(webView: WKWebView, didReceiveAuthenticationChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+        
+        // display basic authentication dialog
+        let authenticationMethod = challenge.protectionSpace.authenticationMethod
+        
+        switch authenticationMethod {
+        case NSURLAuthenticationMethodDefault, NSURLAuthenticationMethodHTTPBasic, NSURLAuthenticationMethodHTTPDigest:
+            
+            let alertController = UIAlertController(title: "Authentication Required", message: "認証が必要です", preferredStyle: .Alert)
+            weak var usernameTextField: UITextField!
+            alertController.addTextFieldWithConfigurationHandler { textField in
+                textField.placeholder = "Username"
+                usernameTextField = textField
+            }
+            weak var passwordTextField: UITextField!
+            alertController.addTextFieldWithConfigurationHandler { textField in
+                textField.placeholder = "Password"
+                textField.secureTextEntry = true
+                passwordTextField = textField
+            }
+            
+            let cancelAction = UIAlertAction(title: "キャンセル", style: .Cancel, handler: { action in completionHandler(.CancelAuthenticationChallenge, nil) })
+            let doneAction = UIAlertAction(title: "OK", style: .Default, handler: { action in
+                if let userName = usernameTextField.text, password = passwordTextField.text {
+                    let credential = NSURLCredential(user: userName, password: password, persistence: .ForSession)
+                    completionHandler(.UseCredential, credential)
+                }
+            })
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(doneAction)
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+            
+        case NSURLAuthenticationMethodServerTrust: completionHandler(.PerformDefaultHandling, nil)
+        default: completionHandler(.CancelAuthenticationChallenge, nil)
+        }
+    }
+    
+    
+    //MARK: - Private Methods
+    func javaScriptAlertViewController(webViewUrl: NSURL?, message: String?, preferredStyle: UIAlertControllerStyle) -> UIAlertController {
+        var alertTitle = ""
+        if let url = webViewUrl, host = url.host {
+            alertTitle = "\(url.scheme)://\(host)"
+        }
+        return UIAlertController(title: alertTitle, message: message, preferredStyle: preferredStyle)
+    }
+}
+
+extension UIView {
+    func screenshot() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0)
+        self.drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
 }

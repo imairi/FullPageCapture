@@ -12,6 +12,7 @@
 		7A2068951C95C22C0050938C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A2068941C95C22C0050938C /* Assets.xcassets */; };
 		7A2068981C95C22C0050938C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A2068961C95C22C0050938C /* LaunchScreen.storyboard */; };
 		7A68EF601C96ADBC0061D184 /* FPCWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */; };
+		7AAB3FB31CD8A15F007AF600 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		7A2068971C95C22C0050938C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7A2068991C95C22C0050938C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FPCWebViewController.swift; sourceTree = "<group>"; };
+		7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				7A2068961C95C22C0050938C /* LaunchScreen.storyboard */,
 				7A2068991C95C22C0050938C /* Info.plist */,
 				7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */,
+				7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */,
 			);
 			path = FullPageCapture;
 			sourceTree = "<group>";
@@ -137,6 +140,7 @@
 			files = (
 				7A68EF601C96ADBC0061D184 /* FPCWebViewController.swift in Sources */,
 				7A20688E1C95C22C0050938C /* AppDelegate.swift in Sources */,
+				7AAB3FB31CD8A15F007AF600 /* ProgressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
