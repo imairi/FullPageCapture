@@ -1,0 +1,10 @@
+PODS:
+  - AHKBendableView (1.0)
+
+DEPENDENCIES:
+  - AHKBendableView
+
+SPEC CHECKSUMS:
+  AHKBendableView: dcf4a134a441c2b18c672cb7834d3d90f9167529
+
+COCOAPODS: 0.39.0

@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import AHKBendableView
 
 class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate, UISearchBarDelegate {
 
@@ -17,11 +18,12 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     @IBOutlet weak var menuBarHeight: NSLayoutConstraint!
     @IBOutlet weak var menuBar: UIView!
     
+    
     var webView = WKWebView()
     var captures = [UIImage]()
     var previousY : CGFloat = 0.0
     var canHideMenuBar = false
-    
+    var captureMenuBaseView = BendableView()
     
     @IBOutlet weak var goBackButton: UIButton!
     @IBOutlet weak var goForwardButton: UIButton!
@@ -31,7 +33,6 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         super.viewDidLoad()
 
         searchBar.delegate = self
-        
         webView.frame = CGRectMake(0, pageTitleView.frame.size.height + 20, view.frame.width, UIScreen.mainScreen().bounds.size.height - menuBar.frame.size.height)
         webView.scrollView.contentInset = UIEdgeInsetsMake(menuBar.frame.size.height, 0, 0, 0)
         view.addSubview(webView)
@@ -48,6 +49,18 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         goBackButton.userInteractionEnabled = false
         goForwardButton.userInteractionEnabled = false
         reloadButton.userInteractionEnabled = false
+        
+        
+        // create capture menu base view
+        captureMenuBaseView = BendableView(frame: CGRectMake(0,UIScreen.mainScreen().bounds.size.height,UIScreen.mainScreen().bounds.size.width,100))
+        captureMenuBaseView.backgroundColor = UIColor.redColor()
+        view.addSubview(captureMenuBaseView)
+        
+        
+        // create capture menu view
+        let captureMenuView: CaptureMenuView = UINib.instantiateView()
+        captureMenuView.frame = CGRectMake(0, 0, captureMenuBaseView.bounds.size.width, captureMenuBaseView.bounds.size.height)
+        captureMenuBaseView.addSubview(captureMenuView)        
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -83,6 +96,25 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     @IBAction func tapReloadButton(sender: AnyObject) {
         webView.reload()
+    }
+    
+    @IBAction func tapBookmarkButton(sender: AnyObject) {
+        print(#function)
+
+        captureMenuBaseView.fillColor = UIColor.redColor()
+        captureMenuBaseView.damping = 0.5
+        captureMenuBaseView.initialSpringVelocity = 0.8
+        
+        var afterY = CGFloat(0.0)
+        if captureMenuBaseView.frame.origin.y < UIScreen.mainScreen().bounds.size.height {
+            afterY = UIScreen.mainScreen().bounds.size.height
+        } else {
+            afterY = UIScreen.mainScreen().bounds.size.height - 100
+        }
+        
+        UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.9, options: .CurveEaseInOut, animations: {
+            self.captureMenuBaseView.frame.origin = CGPoint(x: 0, y: afterY)
+            }, completion: nil)
     }
     
     // MARK - Private Methods

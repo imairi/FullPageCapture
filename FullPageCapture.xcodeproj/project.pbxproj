@@ -13,9 +13,15 @@
 		7A2068981C95C22C0050938C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A2068961C95C22C0050938C /* LaunchScreen.storyboard */; };
 		7A68EF601C96ADBC0061D184 /* FPCWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */; };
 		7AAB3FB31CD8A15F007AF600 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */; };
+		7AB805FB1CDA478600D2CD2B /* CaptureMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB805FA1CDA478600D2CD2B /* CaptureMenuView.xib */; };
+		7AB805FD1CDA479A00D2CD2B /* CaptureMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB805FC1CDA479A00D2CD2B /* CaptureMenuView.swift */; };
+		7AB805FF1CDA4ADD00D2CD2B /* InstantLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB805FE1CDA4ADD00D2CD2B /* InstantLoadable.swift */; };
+		F4E672A4607A5830AC26A020 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 378CFA0DB67757DDFD50A25F /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		378CFA0DB67757DDFD50A25F /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C90948F72827B454DA88164 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		7A20688A1C95C22C0050938C /* FullPageCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FullPageCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A20688D1C95C22C0050938C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A2068921C95C22C0050938C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -24,6 +30,10 @@
 		7A2068991C95C22C0050938C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FPCWebViewController.swift; sourceTree = "<group>"; };
 		7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		7AB805FA1CDA478600D2CD2B /* CaptureMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptureMenuView.xib; sourceTree = "<group>"; };
+		7AB805FC1CDA479A00D2CD2B /* CaptureMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureMenuView.swift; sourceTree = "<group>"; };
+		7AB805FE1CDA4ADD00D2CD2B /* InstantLoadable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstantLoadable.swift; sourceTree = "<group>"; };
+		E27FF8AADF8387152B6D3206 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +41,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4E672A4607A5830AC26A020 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		387386BE1A101EB8A53F87A0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3C90948F72827B454DA88164 /* Pods.debug.xcconfig */,
+				E27FF8AADF8387152B6D3206 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		7A2068811C95C22C0050938C = {
 			isa = PBXGroup;
 			children = (
 				7A20688C1C95C22C0050938C /* FullPageCapture */,
 				7A20688B1C95C22C0050938C /* Products */,
+				387386BE1A101EB8A53F87A0 /* Pods */,
+				CF2179755525D1AA05707276 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,8 +85,19 @@
 				7A2068991C95C22C0050938C /* Info.plist */,
 				7A68EF5F1C96ADBC0061D184 /* FPCWebViewController.swift */,
 				7AAB3FB21CD8A15F007AF600 /* ProgressView.swift */,
+				7AB805FA1CDA478600D2CD2B /* CaptureMenuView.xib */,
+				7AB805FC1CDA479A00D2CD2B /* CaptureMenuView.swift */,
+				7AB805FE1CDA4ADD00D2CD2B /* InstantLoadable.swift */,
 			);
 			path = FullPageCapture;
+			sourceTree = "<group>";
+		};
+		CF2179755525D1AA05707276 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				378CFA0DB67757DDFD50A25F /* Pods.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -74,9 +107,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7A20689C1C95C22C0050938C /* Build configuration list for PBXNativeTarget "FullPageCapture" */;
 			buildPhases = (
+				F5F29C6E0217A9EC7BDFFAC6 /* Check Pods Manifest.lock */,
 				7A2068861C95C22C0050938C /* Sources */,
 				7A2068871C95C22C0050938C /* Frameworks */,
 				7A2068881C95C22C0050938C /* Resources */,
+				442F55EF56BB8753489D3D68 /* Embed Pods Frameworks */,
+				59BA599632D8DDBDEFA68DE8 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -125,6 +161,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AB805FB1CDA478600D2CD2B /* CaptureMenuView.xib in Resources */,
 				7A2068981C95C22C0050938C /* LaunchScreen.storyboard in Resources */,
 				7A2068951C95C22C0050938C /* Assets.xcassets in Resources */,
 				7A2068931C95C22C0050938C /* Main.storyboard in Resources */,
@@ -133,13 +170,63 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		442F55EF56BB8753489D3D68 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		59BA599632D8DDBDEFA68DE8 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5F29C6E0217A9EC7BDFFAC6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		7A2068861C95C22C0050938C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AB805FD1CDA479A00D2CD2B /* CaptureMenuView.swift in Sources */,
 				7A68EF601C96ADBC0061D184 /* FPCWebViewController.swift in Sources */,
 				7A20688E1C95C22C0050938C /* AppDelegate.swift in Sources */,
+				7AB805FF1CDA4ADD00D2CD2B /* InstantLoadable.swift in Sources */,
 				7AAB3FB31CD8A15F007AF600 /* ProgressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -204,7 +291,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -249,23 +336,27 @@
 		};
 		7A20689D1C95C22C0050938C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C90948F72827B454DA88164 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FullPageCapture/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.imairi.FullPageCapture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
 			};
 			name = Debug;
 		};
 		7A20689E1C95C22C0050938C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E27FF8AADF8387152B6D3206 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FullPageCapture/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.imairi.FullPageCapture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
 			};
 			name = Release;
 		};

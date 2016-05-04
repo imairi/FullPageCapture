@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Web View Controller-->
@@ -18,13 +17,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eFC-fe-OtC">
-                                <rect key="frame" x="500" y="500" width="80" height="80"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eFC-fe-OtC">
+                                <rect key="frame" x="260" y="512" width="80" height="80"/>
                                 <color key="backgroundColor" red="0.97254901959999995" green="0.84313725490000002" blue="0.58039215690000001" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="80" id="X0V-gw-SHH"/>
-                                    <constraint firstAttribute="width" constant="80" id="me0-co-9l2"/>
-                                </constraints>
                                 <state key="normal" title="A"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -124,6 +119,9 @@
                                                 <exclude reference="xTG-P9-cJL"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="tapBookmarkButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gAV-WK-dbo"/>
+                                        </connections>
                                     </button>
                                     <searchBar contentMode="redraw" placeholder="URL / キーワードを入力" translatesAutoresizingMaskIntoConstraints="NO" id="sd6-Aw-FkF">
                                         <rect key="frame" x="88" y="0.0" width="424" height="44"/>
@@ -163,26 +161,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="3vn-tF-0am" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="775-9d-a90"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="eFC-fe-OtC" secondAttribute="bottom" constant="20" id="95h-wq-62o"/>
                             <constraint firstItem="ATo-IB-8WO" firstAttribute="top" secondItem="3vn-tF-0am" secondAttribute="bottom" id="AEc-0H-goI"/>
                             <constraint firstItem="ATo-IB-8WO" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="BY2-yb-isN"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="eFC-fe-OtC" secondAttribute="bottom" constant="20" id="JWC-F1-rCo"/>
                             <constraint firstItem="3vn-tF-0am" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="KiS-Sa-NjJ"/>
-                            <constraint firstItem="eFC-fe-OtC" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="Syp-FN-gkp"/>
                             <constraint firstAttribute="trailing" secondItem="ATo-IB-8WO" secondAttribute="trailing" id="VHr-jv-H85"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="eFC-fe-OtC" secondAttribute="bottom" constant="20" id="cTJ-nA-Rf1"/>
-                            <constraint firstItem="eFC-fe-OtC" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="h5a-dF-I1x"/>
-                            <constraint firstAttribute="trailing" secondItem="eFC-fe-OtC" secondAttribute="trailing" constant="20" id="iOL-Bq-eB4"/>
                             <constraint firstAttribute="trailing" secondItem="3vn-tF-0am" secondAttribute="trailing" id="keX-HO-M8X"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="95h-wq-62o"/>
-                                <exclude reference="JWC-F1-rCo"/>
-                                <exclude reference="Syp-FN-gkp"/>
-                                <exclude reference="iOL-Bq-eB4"/>
-                            </mask>
-                        </variation>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
