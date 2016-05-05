@@ -8,6 +8,21 @@
 
 import UIKit
 
+enum CaptureType {
+    case Full, Current, Selection
+}
+
+protocol CaptureMenuViewDelegate {
+    func tapCaptureButton(type:CaptureType)
+}
+
 class CaptureMenuView: UIView, NibLoadable {
 
+    var delegate: CaptureMenuViewDelegate? = nil
+    
+    @IBAction func tapFullCaptureButton(sender: AnyObject) {
+        if let delegate = delegate {
+            delegate.tapCaptureButton(.Full)
+        }
+    }
 }

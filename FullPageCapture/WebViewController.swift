@@ -1,5 +1,5 @@
 //
-//  FPCWebViewController.swift
+//  WebViewController.swift
 //  FullPageCapture
 //
 //  Created by Imairi, Yosuke on 3/14/16.
@@ -10,29 +10,30 @@ import UIKit
 import WebKit
 import AHKBendableView
 
-class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate, UISearchBarDelegate {
+class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate, UISearchBarDelegate, CaptureMenuViewDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var pageTitleLabel: UILabel!
     @IBOutlet weak var pageTitleView: ProgressView!
     @IBOutlet weak var menuBarHeight: NSLayoutConstraint!
     @IBOutlet weak var menuBar: UIView!
-    
+    @IBOutlet weak var goBackButton: UIButton!
+    @IBOutlet weak var goForwardButton: UIButton!
+    @IBOutlet weak var reloadButton: UIButton!
     
     var webView = WKWebView()
     var captures = [UIImage]()
     var previousY : CGFloat = 0.0
     var canHideMenuBar = false
     var captureMenuBaseView = BendableView()
-    
-    @IBOutlet weak var goBackButton: UIButton!
-    @IBOutlet weak var goForwardButton: UIButton!
-    @IBOutlet weak var reloadButton: UIButton!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // set up search bar
         searchBar.delegate = self
+        
+        // set up webview
         webView.frame = CGRectMake(0, pageTitleView.frame.size.height + 20, view.frame.width, UIScreen.mainScreen().bounds.size.height - menuBar.frame.size.height)
         webView.scrollView.contentInset = UIEdgeInsetsMake(menuBar.frame.size.height, 0, 0, 0)
         view.addSubview(webView)
@@ -60,6 +61,7 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         // create capture menu view
         let captureMenuView: CaptureMenuView = UINib.instantiateView()
         captureMenuView.frame = CGRectMake(0, 0, captureMenuBaseView.bounds.size.width, captureMenuBaseView.bounds.size.height)
+        captureMenuView.delegate = self
         captureMenuBaseView.addSubview(captureMenuView)        
     }
 
@@ -77,15 +79,9 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         webView.removeObserver(self, forKeyPath: "canGoBack")
         webView.removeObserver(self, forKeyPath: "canGoForward")
     }
-
-    @IBAction func tapAButton(sender: AnyObject) {
-        webView.userInteractionEnabled = false
-        moveToScrollViewTop()
-        
-        let timer = NSTimer(timeInterval: 1.0, target: self, selector: #selector(takeScreenshot(_:)), userInfo: nil, repeats: true)
-        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
-    }
     
+    
+    // MARK: - IBActions
     @IBAction func tapGoBackButton(sender: AnyObject) {
         webView.goBack()
     }
@@ -117,6 +113,7 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             }, completion: nil)
     }
     
+    
     // MARK - Private Methods
     func image(image: UIImage, didFinishSavingWithError error: NSError!, contextInfo: UnsafeMutablePointer<Void>) {
         if error != nil {
@@ -135,11 +132,11 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         if (webViewContentSize.height < currentOffset.y) {
             
+            // concat captures
             var targetPoint = CGPointZero
             UIGraphicsBeginImageContext(CGSizeMake(webViewContentSize.width * UIScreen.mainScreen().scale, webViewContentSize.height * UIScreen.mainScreen().scale));
             
             for image in captures {
-                
                 let imageWidth = CGFloat(CGImageGetWidth(image.CGImage))
                 let imageHeight = CGFloat(CGImageGetHeight(image.CGImage))
                 let imageRect = CGRectMake(targetPoint.x, targetPoint.y, imageWidth, imageHeight)
@@ -152,7 +149,7 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             UIGraphicsEndImageContext();
             
             
-            // save whole screenshot to Photo app
+            // save whole capture to Photo app
             UIImageWriteToSavedPhotosAlbum(compositeImage, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
             
             // reset stored captures
@@ -170,7 +167,7 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         webView.scrollView.contentOffset = CGPointZero
     }
     
-    // MARK - KVO
+    // MARK: - KVO for WKWebView
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         guard let keyPath = keyPath, change = change else {
             return
@@ -195,9 +192,18 @@ class FPCWebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
 }
 
-extension FPCWebViewController {
 
-    // MARK - UIScrollViewDelegate
+extension WebViewController {
+    // MARK: - CaptureMenuViewDelegate
+    func tapCaptureButton(type: CaptureType) {
+        webView.userInteractionEnabled = false
+        moveToScrollViewTop()
+        
+        let timer = NSTimer(timeInterval: 1.0, target: self, selector: #selector(takeScreenshot(_:)), userInfo: nil, repeats: true)
+        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
+    }
+
+    // MARK: - UIScrollViewDelegate
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if !canHideMenuBar {
             return
@@ -224,7 +230,7 @@ extension FPCWebViewController {
         previousY = scrollView.contentOffset.y
     }
     
-    // MARK - UISearchBarDelegate
+    // MARK: - UISearchBarDelegate
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         
         guard let query = searchBar.text else {
@@ -347,9 +353,7 @@ extension FPCWebViewController {
         default: completionHandler(.CancelAuthenticationChallenge, nil)
         }
     }
-    
-    
-    //MARK: - Private Methods
+
     func javaScriptAlertViewController(webViewUrl: NSURL?, message: String?, preferredStyle: UIAlertControllerStyle) -> UIAlertController {
         var alertTitle = ""
         if let url = webViewUrl, host = url.host {
@@ -359,12 +363,4 @@ extension FPCWebViewController {
     }
 }
 
-extension UIView {
-    func screenshot() -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0)
-        self.drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
-    }
-}
+
