@@ -115,12 +115,6 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
     
     
     // MARK - Private Methods
-    func image(image: UIImage, didFinishSavingWithError error: NSError!, contextInfo: UnsafeMutablePointer<Void>) {
-        if error != nil {
-            print(error.code)
-        }
-    }
-    
     func takeScreenshot(id:AnyObject) {
         let webViewContentSize = webView.scrollView.contentSize
         let currentOffset = webView.scrollView.contentOffset
@@ -130,31 +124,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         
         webView.scrollView.contentOffset = CGPointMake(currentOffset.x, currentOffset.y + webView.frame.size.height)
         
-        if (webViewContentSize.height < currentOffset.y) {
-            
-            // concat captures
-            var targetPoint = CGPointZero
-            UIGraphicsBeginImageContext(CGSizeMake(webViewContentSize.width * UIScreen.mainScreen().scale, webViewContentSize.height * UIScreen.mainScreen().scale));
-            
-            for image in captures {
-                let imageWidth = CGFloat(CGImageGetWidth(image.CGImage))
-                let imageHeight = CGFloat(CGImageGetHeight(image.CGImage))
-                let imageRect = CGRectMake(targetPoint.x, targetPoint.y, imageWidth, imageHeight)
-                
-                image.drawInRect(imageRect)
-                
-                targetPoint = CGPointMake(imageRect.origin.x, imageRect.origin.y + imageRect.size.height)
-            }
-            let compositeImage = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
-            
-            // save whole capture to Photo app
-            UIImageWriteToSavedPhotosAlbum(compositeImage, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
-            
-            // reset stored captures
-            captures = [UIImage]()
-            webView.userInteractionEnabled = true
+        if (webViewContentSize.height < currentOffset.y) { // finish taking whole screenshot
+            generateImage(width: webViewContentSize.width, height: webViewContentSize.height)
             moveToScrollViewTop()
             
             if id is NSTimer {
@@ -163,8 +134,37 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         }
     }
     
+    func generateImage(width width:CGFloat, height:CGFloat) {
+        // concat captures
+        var targetPoint = CGPointZero
+        UIGraphicsBeginImageContext(CGSizeMake(width * UIScreen.mainScreen().scale, height * UIScreen.mainScreen().scale));
+        
+        for image in captures {
+            let imageWidth = CGFloat(CGImageGetWidth(image.CGImage))
+            let imageHeight = CGFloat(CGImageGetHeight(image.CGImage))
+            let imageRect = CGRectMake(targetPoint.x, targetPoint.y, imageWidth, imageHeight)
+            
+            image.drawInRect(imageRect)
+            
+            targetPoint = CGPointMake(imageRect.origin.x, imageRect.origin.y + imageRect.size.height)
+        }
+        let compositeImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        // save whole capture to Photo app
+        UIImageWriteToSavedPhotosAlbum(compositeImage, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
     func moveToScrollViewTop() {
         webView.scrollView.contentOffset = CGPointZero
+    }
+    
+    func image(image: UIImage, didFinishSavingWithError error: NSError!, contextInfo: UnsafeMutablePointer<Void>) {
+        webView.userInteractionEnabled = true
+        captures = [UIImage]()
+        if error != nil {
+            print(error.code)
+        }
     }
     
     // MARK: - KVO for WKWebView
@@ -197,10 +197,21 @@ extension WebViewController {
     // MARK: - CaptureMenuViewDelegate
     func tapCaptureButton(type: CaptureType) {
         webView.userInteractionEnabled = false
-        moveToScrollViewTop()
-        
-        let timer = NSTimer(timeInterval: 1.0, target: self, selector: #selector(takeScreenshot(_:)), userInfo: nil, repeats: true)
-        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
+        switch type {
+        case .Full:
+            moveToScrollViewTop()
+            
+            // take screenshot per 1.0 sec
+            let timer = NSTimer(timeInterval: 1.0, target: self, selector: #selector(takeScreenshot(_:)), userInfo: nil, repeats: true)
+            NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
+            
+        case .Current:
+            captures.append(webView.screenshot())
+            generateImage(width: webView.frame.size.width, height: webView.frame.size.height)
+            
+        case .Selection:
+            print("selection")
+        }
     }
 
     // MARK: - UIScrollViewDelegate

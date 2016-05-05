@@ -25,4 +25,14 @@ class CaptureMenuView: UIView, NibLoadable {
             delegate.tapCaptureButton(.Full)
         }
     }
+    @IBAction func tapCurrentCaptureButton(sender: AnyObject) {
+        if let delegate = delegate {
+            delegate.tapCaptureButton(.Current)
+        }
+    }
+    @IBAction func tapSelectionCaptureButton(sender: AnyObject) {
+        if let delegate = delegate {
+            delegate.tapCaptureButton(.Selection)
+        }
+    }
 }
