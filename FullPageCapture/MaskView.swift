@@ -64,7 +64,7 @@ class MaskView: UIView {
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
-            let touchPosition = touch.locationInView(touch.window)
+            let touchPosition = touch.locationInView(self)
             
             if leftTop.x < touchPosition.x && touchPosition.x < leftTop.x + radius * 2
                 && leftTop.y < touchPosition.y && touchPosition.y < leftTop.y + radius * 2 {

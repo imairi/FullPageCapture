@@ -211,7 +211,7 @@ extension WebViewController {
             
         case .Selection:
             print("selection")
-            let v = MaskView(frame: CGRectMake(0,0,view.frame.size.width,view.frame.size.height))
+            let v = MaskView(frame: CGRectMake(0, menuBar.frame.size.height + menuBar.frame.origin.y, view.frame.size.width,view.frame.size.height - captureMenuBaseView.frame.size.height - pageTitleView.frame.size.height - menuBar.frame.size.height - 20))
             v.backgroundColor = UIColor.clearColor()
             view.addSubview(v)
         }
