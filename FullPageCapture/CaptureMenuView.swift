@@ -14,11 +14,13 @@ enum CaptureType {
 
 protocol CaptureMenuViewDelegate {
     func tapCaptureButton(type:CaptureType)
+    func decideSelectedArea()
 }
 
 class CaptureMenuView: UIView, NibLoadable {
 
     var delegate: CaptureMenuViewDelegate? = nil
+    var isSelectedSelectionCaptureButton = false
     
     @IBAction func tapFullCaptureButton(sender: AnyObject) {
         if let delegate = delegate {
@@ -31,8 +33,21 @@ class CaptureMenuView: UIView, NibLoadable {
         }
     }
     @IBAction func tapSelectionCaptureButton(sender: AnyObject) {
-        if let delegate = delegate {
-            delegate.tapCaptureButton(.Selection)
+        
+        guard let delegate = delegate else {
+            return
         }
+        
+        if isSelectedSelectionCaptureButton {
+            delegate.decideSelectedArea()
+            return
+        }
+
+        delegate.tapCaptureButton(.Selection)
+        isSelectedSelectionCaptureButton = true
+    }
+    
+    @IBAction func tapCaptureButton(sender: AnyObject) {
+        
     }
 }

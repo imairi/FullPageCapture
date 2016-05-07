@@ -47,14 +47,28 @@
                         <action selector="tapSelectionCaptureButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="B2B-eA-cyn"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c55-eT-1YG">
+                    <rect key="frame" x="272" y="10" width="80" height="80"/>
+                    <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="80" id="aPR-Ny-ODp"/>
+                        <constraint firstAttribute="width" constant="80" id="otn-is-uAd"/>
+                    </constraints>
+                    <state key="normal" title="Button"/>
+                    <connections>
+                        <action selector="tapCaptureButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="TBF-rC-bkk"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
+                <constraint firstItem="c55-eT-1YG" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="8am-ta-u4M"/>
                 <constraint firstItem="L7T-oN-ZnZ" firstAttribute="leading" secondItem="uD0-4z-4eo" secondAttribute="trailing" constant="8" id="J0Q-D9-qe1"/>
                 <constraint firstItem="L7T-oN-ZnZ" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Jdp-PD-E3b"/>
                 <constraint firstItem="dB6-qZ-jyq" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="PLo-oG-3QX"/>
                 <constraint firstItem="uD0-4z-4eo" firstAttribute="leading" secondItem="dB6-qZ-jyq" secondAttribute="trailing" constant="8" id="onp-ks-Vze"/>
                 <constraint firstItem="dB6-qZ-jyq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="riZ-Uz-hRO"/>
                 <constraint firstItem="uD0-4z-4eo" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="ubD-xG-Ce7"/>
+                <constraint firstItem="c55-eT-1YG" firstAttribute="leading" secondItem="L7T-oN-ZnZ" secondAttribute="trailing" constant="8" id="yMv-bc-SEc"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

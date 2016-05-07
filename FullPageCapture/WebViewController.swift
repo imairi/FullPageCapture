@@ -26,6 +26,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
     var previousY : CGFloat = 0.0
     var canHideMenuBar = false
     var captureMenuBaseView = BendableView()
+    var maskView = MaskView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,7 +126,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         webView.scrollView.contentOffset = CGPointMake(currentOffset.x, currentOffset.y + webView.frame.size.height)
         
         if (webViewContentSize.height < currentOffset.y) { // finish taking whole screenshot
-            generateImage(width: webViewContentSize.width, height: webViewContentSize.height)
+            generateImage(selectedRect: webView.frame, outputRect: CGRectMake(0, 0, webViewContentSize.width, webViewContentSize.height))
             moveToScrollViewTop()
             
             if id is NSTimer {
@@ -134,18 +135,17 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         }
     }
     
-    func generateImage(width width:CGFloat, height:CGFloat) {
+    func generateImage(selectedRect selectedRect:CGRect, outputRect:CGRect) {
         // concat captures
-        var targetPoint = CGPointZero
-        UIGraphicsBeginImageContext(CGSizeMake(width * UIScreen.mainScreen().scale, height * UIScreen.mainScreen().scale));
-        
+        var targetPoint = selectedRect.origin
+        UIGraphicsBeginImageContext(CGSizeMake(outputRect.size.width * UIScreen.mainScreen().scale, outputRect.size.height * UIScreen.mainScreen().scale));
+        //TODO://http://qiita.com/blurrednote/items/3ad3aa92024b4f7401cd
         for image in captures {
-            let imageWidth = CGFloat(CGImageGetWidth(image.CGImage))
-            let imageHeight = CGFloat(CGImageGetHeight(image.CGImage))
-            let imageRect = CGRectMake(targetPoint.x, targetPoint.y, imageWidth, imageHeight)
-            
+            let imageRect = CGRectMake(targetPoint.x * UIScreen.mainScreen().scale,
+                                       targetPoint.y * UIScreen.mainScreen().scale,
+                                       selectedRect.size.width * UIScreen.mainScreen().scale,
+                                       selectedRect.size.height * UIScreen.mainScreen().scale)
             image.drawInRect(imageRect)
-            
             targetPoint = CGPointMake(imageRect.origin.x, imageRect.origin.y + imageRect.size.height)
         }
         let compositeImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -197,6 +197,7 @@ extension WebViewController {
     // MARK: - CaptureMenuViewDelegate
     func tapCaptureButton(type: CaptureType) {
         webView.userInteractionEnabled = false
+        
         switch type {
         case .Full:
             moveToScrollViewTop()
@@ -207,14 +208,24 @@ extension WebViewController {
             
         case .Current:
             captures.append(webView.screenshot())
-            generateImage(width: webView.frame.size.width, height: webView.frame.size.height)
+            generateImage(selectedRect: webView.frame, outputRect: webView.frame)
             
         case .Selection:
-            print("selection")
-            let v = MaskView(frame: CGRectMake(0, menuBar.frame.size.height + menuBar.frame.origin.y, view.frame.size.width,view.frame.size.height - captureMenuBaseView.frame.size.height - pageTitleView.frame.size.height - menuBar.frame.size.height - 20))
-            v.backgroundColor = UIColor.clearColor()
-            view.addSubview(v)
+            maskView = MaskView(frame: CGRectMake(0, menuBar.frame.size.height + menuBar.frame.origin.y, view.frame.size.width,view.frame.size.height - captureMenuBaseView.frame.size.height - pageTitleView.frame.size.height - menuBar.frame.size.height - 20))
+            maskView.backgroundColor = UIColor.clearColor()
+            view.addSubview(maskView)
         }
+    }
+    
+    func decideSelectedArea() {
+        print("leftTop:\(maskView.leftTop)")
+        print("rightBottom:\(maskView.rightBottom)")
+        
+        captures.append(webView.screenshot())
+        
+        print("capturedRect:\(maskView.capturedRect())")
+        generateImage(selectedRect: maskView.capturedRect(), outputRect: maskView.capturedRect())
+        
     }
 
     // MARK: - UIScrollViewDelegate

@@ -87,4 +87,9 @@ class MaskView: UIView {
             setNeedsDisplay()
         }
     }
+    
+    // MARK: - Public Methods
+    func capturedRect() -> CGRect {
+        return CGRectMake(leftTop.x, leftTop.y, rightBottom.x - leftTop.x, rightBottom.y - leftTop.y)
+    }
 }
